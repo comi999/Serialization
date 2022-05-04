@@ -63,18 +63,36 @@ public:
 	Class a, b, c, d;
 };
 
+#include "STLSerialization.hpp"
+
 int main()
 {
-	Class2 c = {
+	/*Class2 c = {
 		{ 1, 1.1, 1.11, false },
 		{ 2, 2.2, 2.22, true },
 		{ 3, 3.3, 3.33, false },
 		{ 4, 4.4, 4.44, true }
-	};
+	};*/
 
-	FileStream f;
-	f.Create( "./testfile.file" );
+	/*FileSerializer f( "./testfile.file" );
+	
+	std::string str = "SomeString";
+	f << str;
 
-	StreamSerializer< FileStream > fs( f );
-	fs << c;
+	f.Close();
+
+	std::string out;
+	FileDeserializer fd( "./testfile.file" );
+	fd >> out;
+	fd.Close();*/
+
+	FILE* File;
+	fopen_s( &File, "./test.file", "wb+" );
+	fwrite( "Test", sizeof( char ), 4, File );
+	fclose( File );
+
+	char text[ 4 ];
+	fopen_s( &File, "./test.file", "wb+" );
+	fread( &text, sizeof( char ), 4, File );
+	fclose( File );
 }

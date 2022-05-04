@@ -20,10 +20,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Serialization_Old.hpp">
+    <ClInclude Include="Serialization.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Serialization.hpp">
+    <ClInclude Include="STLSerialization.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
