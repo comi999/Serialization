@@ -74,5 +74,7 @@ int main()
 
 	FileStream f;
 	f.Create( "./testfile.file" );
-	f.Size();
+
+	StreamSerializer< FileStream > fs( f );
+	fs << c;
 }

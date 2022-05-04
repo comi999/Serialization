@@ -4,7 +4,7 @@
 
 class Serialization
 {
-	template < typename, bool > friend class Serializable;
+	template < typename > friend class Serializable;
 
 	template < typename T >
 	static constexpr auto _HasSerializationImpl( T* ) ->
@@ -41,9 +41,14 @@ public:
 	template < typename _Serializable, typename _Serializer >
 	inline static void Serialize( const _Serializable& a_Serializable, _Serializer& a_Serializer )
 	{
-		static_assert( HasSerialization< _Serializable >, "_Serializable must implement _Serializable::Serialize" );
-
-		a_Serializable.Serialize( a_Serializer );
+		if constexpr ( HasSerialization< _Serializable > )
+		{
+			a_Serializable.Serialize( a_Serializer );
+		}
+		else
+		{
+			Serializable< _Serializable >( a_Serializable ).Serialize( a_Serializer );
+		}
 	}
 
 private:
@@ -51,37 +56,23 @@ private:
 	Serialization( Serialization&& ) = delete;
 };
 
-template < typename T, bool _HasSerialization = Serialization::HasSerialization< T > >
+template < typename T >
 class Serializable
 {
+public:
+
 	Serializable( const T& a_Serializable )
 		: m_Serializable( a_Serializable )
 	{ }
 
 private:
 
-	template < typename _Serializer >
-	static void Serialize( _Serializer& a_Serializer )
-	{
-		a_Serializer.Write( &m_Serializable, sizeof( T ) );
-	}
-
-	const T& m_Serializable;
-};
-
-template < typename T >
-class Serializable< T, true >
-{
-	Serializable( const T& a_Serializable )
-		: m_Serializable( a_Serializable )
-	{ }
-
-private:
+	friend class Serialization;
 
 	template < typename _Serializer >
-	static void Serialize( _Serializer& a_Serializer )
+	void Serialize( _Serializer& a_Serializer ) const
 	{
-		Serialization::Serialize( m_Serializable, a_Serializer );
+
 	}
 
 	const T& m_Serializable;
@@ -104,7 +95,8 @@ public:
 	template < typename T >
 	_This& operator << ( const T& a_Serializable )
 	{
-
+		Serialization::Serialize( a_Serializable, *this );
+		return *this;
 	}
 
 private:
