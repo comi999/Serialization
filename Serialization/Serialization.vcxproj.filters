@@ -23,8 +23,5 @@
     <ClInclude Include="Serialization.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="STLSerialization.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

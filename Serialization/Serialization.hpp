@@ -445,6 +445,11 @@ public:
 		fseek( m_File, a_Position, SEEK_SET );
 	}
 
+	inline bool End() const
+	{
+		return feof( m_File );
+	}
+
 	inline size_t Size() const
 	{
 		if ( !m_File )
@@ -467,8 +472,85 @@ private:
 	FILE* m_File;
 };
 
-typedef StreamSerializer  < FileStream > FileSerializer;
-typedef StreamDeserializer< FileStream > FileDeserializer;
+class BufferStream
+{
+public:
+
+	BufferStream()
+		: m_Data( nullptr )
+		, m_Head( nullptr )
+		, m_Size( 0 )
+	{ }
+
+	BufferStream( size_t a_Size )
+		: m_Data( ( uint8_t* )malloc( a_Size ) )
+		, m_Head( m_Data )
+		, m_Size( a_Size )
+	{ }
+
+	~BufferStream()
+	{
+		Close();
+	}
+
+	void Open( size_t a_Size )
+	{
+		if ( m_Data )
+		{
+			Close();
+		}
+
+		m_Data = ( uint8_t* )malloc( a_Size );
+		m_Head = m_Data;
+		m_Size = a_Size;
+	}
+
+	void Close()
+	{
+		delete[] m_Data;
+		m_Data = nullptr;
+		m_Head = nullptr;
+		m_Size = 0;
+	}
+
+	inline void Write( const void* a_From, size_t a_Size )
+	{
+		memcpy( m_Head, a_From, a_Size );
+		m_Head += a_Size;
+	}
+
+	inline void Read( void* a_To, size_t a_Size )
+	{
+		memcpy( a_To, m_Head, a_Size );
+		m_Head += a_Size;
+	}
+
+	inline void Seek( size_t a_Position )
+	{
+		m_Head = m_Data + a_Position;
+	}
+
+	inline bool End() const
+	{
+		return m_Head - m_Data == m_Size;
+	}
+
+	inline size_t Size() const
+	{
+		return m_Size;
+	}
+
+private:
+
+	uint8_t* m_Data;
+	uint8_t* m_Head;
+	size_t   m_Size;
+};
+
+typedef StreamSerializer  < FileStream   > FileSerializer;
+typedef StreamDeserializer< FileStream   > FileDeserializer;
+typedef StreamSerializer  < BufferStream > BufferSerializer;
+typedef StreamDeserializer< BufferStream > BufferDeserializer;
 
 template < typename >
 class Serializer;
