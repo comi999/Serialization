@@ -43,6 +43,12 @@ private:
 		a_Serializer << m_Serializable->first << m_Serializable->second;
 	}
 
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer & m_Serializable->first & m_Serializable->second;
+	}
+
 	const Type* m_Serializable;
 };
 
@@ -104,6 +110,20 @@ private:
 		if constexpr ( sizeof...( Args ) > 1 )
 		{
 			a_Serializer << m_Serializable->_Get_rest();
+		}
+	}
+
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		if constexpr ( sizeof...( Args ) > 0 )
+		{
+			a_Sizer & m_Serializable->_Myfirst._Val;
+		}
+
+		if constexpr ( sizeof...( Args ) > 1 )
+		{
+			a_Sizer & m_Serializable->_Get_rest();
 		}
 	}
 
@@ -176,6 +196,17 @@ private:
 		}
 	}
 
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer += sizeof( size_t );
+
+		for ( size_t i = 0; i < _Size; ++i )
+		{
+			a_Sizer & ( *m_Serializable )[ i ];
+		}
+	}
+
 	const Type* m_Serializable;
 };
 
@@ -240,6 +271,13 @@ private:
 		a_Serializer.m_Stream.Write( m_Serializable->data(), sizeof( typename Type::value_type ) * m_Serializable->size() );
 	}
 
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer += sizeof( size_t );
+		a_Sizer += sizeof( typename Type::value_type ) * m_Serializable->size();
+	}
+
 	const Type* m_Serializable;
 };
 
@@ -301,6 +339,17 @@ private:
 		for ( auto& Element : *m_Serializable )
 		{
 			a_Serializer << Element;
+		}
+	}
+
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer += sizeof( size_t );
+		
+		for ( auto& Element : *m_Serializable )
+		{
+			a_Sizer & Element;
 		}
 	}
 
@@ -372,6 +421,17 @@ private:
 		}
 	}
 
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer += sizeof( size_t );
+
+		for ( auto& Element : *m_Serializable )
+		{
+			a_Sizer & Element;
+		}
+	}
+
 	const Type* m_Serializable;
 };
 
@@ -437,6 +497,16 @@ private:
 		for ( auto& Element : *m_Serializable )
 		{
 			a_Serializer << Element;
+		}
+	}
+
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer += sizeof( size_t );
+		for ( auto& Element : *m_Serializable )
+		{
+			a_Sizer & Element;
 		}
 	}
 
@@ -507,6 +577,17 @@ private:
 		}
 	}
 
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer += sizeof( size_t );
+
+		for ( auto& Element : *m_Serializable )
+		{
+			a_Sizer & Element;
+		}
+	}
+
 	const Type* m_Serializable;
 };
 
@@ -574,6 +655,17 @@ private:
 		}
 	}
 
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer += sizeof( size_t );
+
+		for ( auto& Element : *m_Serializable )
+		{
+			a_Sizer & Element;
+		}
+	}
+
 	const Type* m_Serializable;
 };
 
@@ -638,6 +730,17 @@ private:
 		for ( auto& Pair : *m_Serializable )
 		{
 			a_Serializer << Pair;
+		}
+	}
+
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer += sizeof( size_t );
+
+		for ( auto& Element : *m_Serializable )
+		{
+			a_Sizer & Element;
 		}
 	}
 
@@ -710,6 +813,17 @@ private:
 		}
 	}
 
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer += sizeof( size_t );
+
+		for ( auto& Element : *m_Serializable )
+		{
+			a_Sizer& Element;
+		}
+	}
+
 	const Type* m_Serializable;
 };
 
@@ -776,6 +890,17 @@ private:
 		for ( auto& Pair : *m_Serializable )
 		{
 			a_Serializer << Pair;
+		}
+	}
+
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer += sizeof( size_t );
+
+		for ( auto& Element : *m_Serializable )
+		{
+			a_Sizer& Element;
 		}
 	}
 
@@ -848,6 +973,17 @@ private:
 		}
 	}
 
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer += sizeof( size_t );
+
+		for ( auto& Element : *m_Serializable )
+		{
+			a_Sizer& Element;
+		}
+	}
+
 	const Type* m_Serializable;
 };
 
@@ -914,6 +1050,17 @@ private:
 		for ( auto& Element : *m_Serializable )
 		{
 			a_Serializer << Element;
+		}
+	}
+
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer += sizeof( size_t );
+
+		for ( auto& Element : *m_Serializable )
+		{
+			a_Sizer& Element;
 		}
 	}
 
@@ -986,6 +1133,17 @@ private:
 		}
 	}
 
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer += sizeof( size_t );
+
+		for ( auto& Element : *m_Serializable )
+		{
+			a_Sizer& Element;
+		}
+	}
+
 	const Type* m_Serializable;
 };
 
@@ -1052,6 +1210,17 @@ private:
 		for ( auto& Element : *m_Serializable )
 		{
 			a_Serializer << Element;
+		}
+	}
+
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer += sizeof( size_t );
+
+		for ( auto& Element : *m_Serializable )
+		{
+			a_Sizer& Element;
 		}
 	}
 
@@ -1124,6 +1293,17 @@ private:
 		}
 	}
 
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer += sizeof( size_t );
+
+		for ( auto& Element : *m_Serializable )
+		{
+			a_Sizer& Element;
+		}
+	}
+
 	const Type* m_Serializable;
 };
 
@@ -1188,6 +1368,12 @@ private:
 		a_Serializer << m_Serializable->_Get_container();
 	}
 
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer & m_Serializable->_Get_container();
+	}
+
 	const Type* m_Serializable;
 };
 
@@ -1242,6 +1428,12 @@ private:
 	void Serialize( _StreamSerializer& a_Serializer ) const
 	{
 		a_Serializer << m_Serializable->_Get_container();
+	}
+
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer & m_Serializable->_Get_container();
 	}
 
 	const Type* m_Serializable;
@@ -1306,6 +1498,12 @@ private:
 	void Serialize( _StreamSerializer& a_Serializer ) const
 	{
 		a_Serializer << reinterpret_cast< const Access* >( m_Serializable )->_Get_Container();
+	}
+
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer & reinterpret_cast< const Access* >( m_Serializable )->_Get_Container();
 	}
 
 	const Type* m_Serializable;

@@ -26,6 +26,12 @@ private:
 	}
 
 	template < typename T >
+	void SizeOf( T& a_Sizer ) const
+	{
+		a_Sizer & a & b & c & d & fl;
+	}
+
+	template < typename T >
 	void Deserialize( T& t )
 	{
 		t >> a >> b >> c >> d;
@@ -35,6 +41,7 @@ private:
 	float b;
 	double c;
 	bool d;
+	float fl[ 4 ];
 };
 
 
@@ -56,13 +63,21 @@ private:
 		t >> a >> b >> c >> d;
 	}
 
+	template < typename T >
+	void SizeOf( T& a_Sizer ) const
+	{
+		a_Sizer & a & b & c & d;
+	}
+
 public:
 
 	Class a, b, c, d;
 	std::string someS;
 };
 
+#include "STLSerialization.hpp"
+
 int main()
 {
-	
+
 }

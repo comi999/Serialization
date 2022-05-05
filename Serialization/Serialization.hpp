@@ -8,6 +8,8 @@ class Serializer;
 template < typename >
 class Deserializer;
 
+class StreamSizer;
+
 class Serialization
 {
 	#pragma region HasOnBeforeSerialize
@@ -94,6 +96,20 @@ class Serialization
 
 	#pragma endregion
 
+	#pragma region HasSizeOf
+
+	template < typename T >
+	static constexpr auto _HasSizeOfImpl( T* ) ->
+		typename std::is_same< decltype( std::declval< T& >().SizeOf( std::declval< void*& >() ) ), void >::type;
+
+	template < typename >
+	static constexpr std::false_type _HasSizeOfImpl( ... );
+
+	template < typename T >
+	using _HasSizeOf = decltype( _HasSizeOfImpl< T >( 0 ) );
+
+	#pragma endregion
+
 public:
 
 	template < typename T >
@@ -113,6 +129,9 @@ public:
 
 	template < typename T >
 	static constexpr bool HasOnAfterDeserialize = _HasOnAfterDeserialize< T >::value;
+
+	template < typename T >
+	static constexpr bool HasSizeOf = _HasSizeOf< T >::value;
 
 	template < typename _Serializable, typename _Serializer >
 	inline static void Serialize( const _Serializable& a_Serializable, _Serializer& a_Serializer )
@@ -158,6 +177,27 @@ public:
 		{
 			const_cast< _Deserializable& >( a_Deserializable ).OnAfterDeserialize();
 		}
+	}
+
+	template < typename _Sizeable, typename _Sizer >
+	inline static void SizeOf( const _Sizeable& a_Sizeable, _Sizer& a_Sizer )
+	{
+		if constexpr ( HasSizeOf< _Sizeable > )
+		{
+			a_Sizeable.SizeOf( a_Sizer );
+		}
+		else
+		{
+			Serializer< _Sizeable >( a_Sizeable ).SizeOf( a_Sizer );
+		}
+	}
+
+	template < typename _Sizeable >
+	inline static size_t GetSizeOf( const _Sizeable& a_Sizeable )
+	{
+		StreamSizer Sizer;
+		SizeOf( a_Sizeable, Sizer );
+		return Sizer;
 	}
 
 private:
@@ -245,6 +285,37 @@ private:
 	_Stream m_Stream;
 };
 
+class StreamSizer
+{
+public:
+
+	StreamSizer()
+		: m_Size( 0 )
+	{ }
+
+	template < typename T >
+	StreamSizer& operator &( const T& a_Object )
+	{
+		Serialization::SizeOf( a_Object, *this );
+		return *this;
+	}
+
+	StreamSizer& operator +=( size_t a_Size )
+	{
+		m_Size += a_Size;
+		return *this;
+	}
+
+	operator size_t () const
+	{
+		return m_Size;
+	}
+
+private:
+
+	size_t m_Size;
+};
+
 template < typename T >
 class Serializer
 {
@@ -268,6 +339,12 @@ private:
 	void Serialize( _StreamSerializer& a_Serializer ) const
 	{
 		a_Serializer.m_Stream.Write( m_Serializable, sizeof( Type ) );
+	}
+
+	template < typename _Sizer >
+	void SizeOf( _Sizer& a_Sizer ) const
+	{
+		a_Sizer += sizeof( T );
 	}
 
 	const Type* m_Serializable;
